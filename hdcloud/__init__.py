@@ -3,9 +3,9 @@ from __future__ import absolute_import
 __version__ = '1.0a1'
 
 from .client import HDCloudClient
-from .jobs import JobManager
-from .stores import StoreManager
-from .profiles import ProfileManager
+from .jobs import Job, JobManager
+from .stores import Store, StoreManager
+from .profiles import Profile, ProfileManager
 
 class HDCloud(object):
     """

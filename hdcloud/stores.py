@@ -9,5 +9,8 @@ class Store(base.Resource):
 class StoreManager(base.Manager):
     resource_class = Store
     
-    def list(self):
+    def all(self):
         return self._list('/stores', 'stores')
+        
+    def get(self, id):
+        return self._get('/stores/%s' % id, 'store')
