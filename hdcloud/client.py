@@ -32,14 +32,14 @@ class HDCloudClient(httplib2.Http):
         kwargs.setdefault('headers', {})
         kwargs['headers']['User-Agent'] = self.USER_AGENT
         
-        resp, body = self._request(url, method, *args, **kwargs)
+        resp, body = self._hdc_request(url, method, *args, **kwargs)
         
         if resp.status in (400, 401, 403, 404, 406, 413, 500):
             raise exceptions.from_response(resp, body)
             
         return resp, body
     
-    def _request(self, url, method, *args, **kwargs):
+    def _hdc_request(self, url, method, *args, **kwargs):
         # Separate method for mocking and testing.
         resp, body = super(HDCloudClient, self).request(url, method, *args, **kwargs)
         body = json.loads(body) if body else None

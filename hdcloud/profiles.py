@@ -9,5 +9,8 @@ class Profile(base.Resource):
 class ProfileManager(base.Manager):
     resource_class = Profile
     
-    def list(self):
-        return self._list('/profiles', 'encoding_profiles')
+    def all(self, page=1):
+        return self._list('/encoding_profiles', 'encoding_profiles')
+        
+    def get(self, id):
+        return self._get('/encoding_profiles/%s' % id, 'encoding_profile')

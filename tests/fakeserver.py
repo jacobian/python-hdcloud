@@ -41,7 +41,7 @@ class FakeClient(HDCloudClient):
         self.password = 'password'
         self.callstack = []
         
-    def _request(self, url, method, *args, **kwargs):
+    def _hdc_request(self, url, method, *args, **kwargs):
         # Check that certain things are called correctly
         if method in ['GET', 'DELETE']:
             assert_not_in('body', kwargs)
@@ -88,8 +88,8 @@ class FakeClient(HDCloudClient):
                        "created_at": None,
                        "time_duration": None}]})
     
-    def get_encoding_profile_1(self, **kw):
-        return (200, {"encoding_profile": self.get_encoding_profiles(**kw)[0]})
+    def get_encoding_profiles_1(self, **kw):
+        return (200, {"encoding_profile": self.get_encoding_profiles(**kw)[1]['encoding_profiles'][0]})
     
     def get_jobs(self, **kw):
         return (200, [{"job": {"current_step": "encoding",
