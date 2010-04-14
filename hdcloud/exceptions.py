@@ -1,14 +1,11 @@
 class HDCloudException(Exception):
-    """
-    The base exception class for all exceptions this library raises.
-    """
     def __init__(self, code, message=None, details=None):
         self.code = code
-        self.message = message or self.__class__.message
+        self.msg = message or self.__class__.__name__
         self.details = details
         
     def __str__(self):
-        return "%s (HTTP %s)" % (self.message, self.code)
+        return "%s (HTTP %s)" % (self.msg, self.code)
 
 _code_map = dict((c.http_status, c) for c in HDCloudException.__subclasses__())
 
