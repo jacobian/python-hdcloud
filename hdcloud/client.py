@@ -21,12 +21,10 @@ class HDCloudClient(httplib2.Http):
     def request(self, url, method, *args, **kwargs):
         url = urlparse.urljoin(self.BASE_URL, url.lstrip('/'))
         
-        # Make sure to hardcode ?format=json
-        parsed = urlparse.urlsplit(url)
-        query = [i for i in urlparse.parse_qsl(parsed.query) if i[0] != 'format']
-        query.append(('format', 'json'))
-        query = urllib.urlencode(query)
-        url = urlparse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, query, parsed.fragment))
+        # Make sure to hardcode requests for JSON
+        scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
+        path = "%s.json" % path
+        url = urlparse.urlunsplit((scheme, netloc, path, query, fragment))
         
         # Add User-Agent headers
         kwargs.setdefault('headers', {})

@@ -9,6 +9,9 @@ from __future__ import with_statement
 from __future__ import absolute_import
 
 import httplib2
+import urllib
+import urlparse
+from os.path import splitext
 from hdcloud import HDCloud
 from hdcloud.client import HDCloudClient
 from nose.tools import assert_equal
@@ -48,17 +51,24 @@ class FakeClient(HDCloudClient):
         elif method in ['PUT', 'POST']:
             assert_in('body', kwargs)
         
-        # Check ?format=json
-        assert_in('format=json', url)
+        # Check for JSON requests
+        scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
+        assert path.endswith(".json")
         
         # Call a method on self instead
-        munged_url = url.replace(self.BASE_URL, '/').split('?', 1)[0]
-        callback = "%s_%s" % (method.lower(), munged_url.strip('/').replace('/', '_'))
+        _, _, path_prefix, _, _ = urlparse.urlsplit(self.BASE_URL)
+        munged_path = splitext(path.replace(path_prefix, ''))[0].strip('/').replace('/', '_')
+        callback = "%s_%s" % (method.lower(), munged_path)
         if not hasattr(self, callback):
             fail('Called unknown API method: %s %s' % (method, url))
         
-        # Note the call
-        self.callstack.append((method, munged_url, kwargs.get('body', None)))
+        # Note the call. To make comparisons easier in testing easy, we'll
+        # sort the GET kwargs by name.
+        called_url = "/%s" % path.replace(path_prefix, '')
+        if query:
+            sorted_qs = urllib.urlencode(sorted(urlparse.parse_qsl(query)))
+            called_url = '%s?%s' % (called_url, sorted_qs)
+        self.callstack.append((method, called_url, kwargs.get('body', None)))
         
         status, body = getattr(self, callback)(**kwargs)
         return httplib2.Response({"status": status}), body

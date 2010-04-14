@@ -15,11 +15,11 @@ def test_resource_repr():
 def test_resource_lazy_getattr():
     s = Store(hdcloud.stores, {'id': 1})
     assert_equal(s.name, 'Example Store')
-    hdcloud.assert_called('GET', '/stores/1')
+    hdcloud.assert_called('GET', '/stores/1.json')
     
     # Missing stuff still fails after a second get
     assert_raises(AttributeError, getattr, s, 'blahblah')
-    hdcloud.assert_called('GET', '/stores/1')
+    hdcloud.assert_called('GET', '/stores/1.json')
 
 def test_eq():
     # Two resources of the same type with the same id: equal
