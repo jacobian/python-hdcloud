@@ -117,7 +117,11 @@ class FakeClient(HDCloudClient):
         return (200, self.get_jobs(**kw)[1][0])
     
     def get_jobs_1_frames(self, **kw):
-        raise NotImplementedError
+        return (200, {u'frames': {u'filenames': ['one.jpg', 'two.jpg'],
+                                  u'page': 1,
+                                  u'per_page': 15,
+                                  u'total_entries': 0,
+                                  u'total_pages': 0}})
     
     def delete_jobs_1(self, **kw):
         return (200, None)
@@ -152,6 +156,8 @@ class FakeClient(HDCloudClient):
                                "remote_id": "my-own-remote-id"}}])
     
     def get_jobs_failed(self, **kw):
+        # Return an empty list to test the client's handling
+        # of empty responses.
         return (200, [{"job": {"current_step": "failed",
                                "source_filename": "beer-drinking-pig.mpg",
                                "encoding_profile_id": None,
