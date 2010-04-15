@@ -64,9 +64,40 @@ class JobManager(base.Manager):
         """
         return self._list('/jobs/failed?page=%s' % page)
         
-    def create(self, source, destination, files, encoding_profiles, priority=5,
-               use_file_cache=True, name=None, callback_url=None):
-        raise NotImplementedError
+    def create(self, source, destination, files, profiles=None, priority=5,
+               use_file_cache=True, name=None, remote_id=None, callback_url=None):
+        """
+        Kick off a new encoding task
+
+        :param source: The :class:`Store` containing the source file.
+        :param destination: The :class:`Store` to store the output file(s)
+        :param files: A list of filenames in the source store to encode.
+        :param profiles: A list of :class:`Profile` for encoding.
+        :param priority: Integer, 1-10; higher numbers are higher priorities.
+        :param use_file_cache: Cache the source file in HD Cloud's cache?
+        :param name: A name for the name.
+        :param remote_id: An arbitrary string identifying the job.
+        :param callback_url: A webhook that will get POSTed to when the job completes.
+        :rtype: the :class:`Job` that's been created.
+        """
+        params = [
+            ('job[source_id]',      int(getattr(source, 'id', source)),
+            ('job[destination_id]', int(getattr(source, 'id', source)),
+            ('job[priority]',       int(priority)),
+            ('job[use_file_cache]', use_file_cache and 'true' or 'false'),
+        ]
+        params.extend([('files[]', f) for f in files])
+        if profiles:
+            prof_ids = [int(getattr(p, 'id', p)) for p in profiles]
+            params.extend([('encoding_profile_ids[]', p) for p in prof_ids])
+        if name:
+            params.append(('job[name]', name))
+        if remote_id:
+            params.append(('job[remote_id]', remote_id))
+        if callback_url:
+            params.append(('job[callback_url]', callback_url))
+
+        return self._create('/jobs', urllib.urlencode(params), 'job')
         
     def get(self, id):
         """
