@@ -81,8 +81,8 @@ class JobManager(base.Manager):
         :rtype: the :class:`Job` that's been created.
         """
         params = [
-            ('job[source_id]',      int(getattr(source, 'id', source)),
-            ('job[destination_id]', int(getattr(source, 'id', source)),
+            ('job[source_id]',      int(getattr(source, 'id', source))),
+            ('job[destination_id]', int(getattr(source, 'id', source))),
             ('job[priority]',       int(priority)),
             ('job[use_file_cache]', use_file_cache and 'true' or 'false'),
         ]
