@@ -13,7 +13,7 @@ except ImportError:
 
 setup(
     name = "python-hdcloud",
-    version = "1.0a1",
+    version = "1.0",
     description = "Client library for the HD Cloud API",
     long_description = read('README.rst'),
     url = 'http://packages.python.org/python-hdcloud',

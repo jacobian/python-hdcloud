@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-__version__ = '1.0a1'
+__version__ = '1.0'
 
 from .client import HDCloudClient
 from .jobs import Job, JobManager
