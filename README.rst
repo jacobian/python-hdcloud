@@ -23,16 +23,14 @@ Then call methods::
     >>> hdcloud.jobs.get(id=12345)
     <Job: 12345 - completed>
     
-For details, `see the documentation
-<http://packages.python.org/python-hdcloud/`_ and/or HD Cloud's `API
-documentation <http://hdcloud.com/api/v1/help/>`_.
+For details, `see the documentation <http://packages.python.org/python-hdcloud/>`_ 
+and/or HD Cloud's `API documentation <http://hdcloud.com/api/v1/help/>`_.
 
 Contributing
 ------------
 
-Development takes place `on GitHub
-<http://github.com/jacobian/python-hdcloud>`_; please file bugs/pull requests
-there.
+Development takes place `on GitHub <http://github.com/jacobian/python-hdcloud>`_;
+please file bugs/pull requests there.
 
-Development on this project was funded by `Discovery <http://discovery.com/>_ -
+Development on this project was funded by `Discovery <http://discovery.com/>`_ -
 thanks!
