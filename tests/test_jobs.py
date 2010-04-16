@@ -52,4 +52,15 @@ def test_destroy_bulk():
     hdcloud.assert_called('DELETE', '/jobs/destroy_bulk.json?job_ids%5B%5D=1&job_ids%5B%5D=2&job_ids%5B%5D=3')
     
 def test_job_repr():
-    assert_equal(str(hdcloud.jobs.get(id=1)), '<Job: 1>')
+    assert_equal(str(hdcloud.jobs.get(id=1)), '<Job: 1 - Encoding: Pass 1>')
+    
+def test_job_create():
+    st = hdcloud.stores.get(id=1)
+    pr = hdcloud.profiles.get(id=1)
+    jobs = hdcloud.jobs.create(
+        source = st,
+        destination = st,
+        files = ['hi.mpg'],
+        profiles = [pr],
+    )
+    assert_isinstance(jobs[0], Job)

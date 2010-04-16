@@ -8,7 +8,12 @@ class Job(base.Resource):
     An encoding task.
     """
     def __repr__(self):
-        return "<Job: %s>" % self.id
+        return "<Job: %s - %s>" % (self.id, self.current_status)
+    
+    # HDCloud uses the key "complete?" which isn't valid Python, so alias it.
+    @property
+    def complete(self):
+        return self._info['complete?']
     
     def frames(self, page=1):
         """
@@ -24,7 +29,7 @@ class Job(base.Resource):
         Delete (i.e. cancel) this job.
         """
         return self.manager.delete(self)
-    
+            
 class JobManager(base.Manager):
     resource_class = Job
         
@@ -64,8 +69,8 @@ class JobManager(base.Manager):
         """
         return self._list('/jobs/failed?page=%s' % page)
         
-    def create(self, source, destination, files, profiles=None, priority=5,
-               use_file_cache=True, name=None, remote_id=None, callback_url=None):
+    def create(self, source, destination, files, profiles, priority=5,
+               use_file_cache=True, remote_id=None, callback_url=None):
         """
         Kick off a new encoding task
 
@@ -75,10 +80,9 @@ class JobManager(base.Manager):
         :param profiles: A list of :class:`Profile` for encoding.
         :param priority: Integer, 1-10; higher numbers are higher priorities.
         :param use_file_cache: Cache the source file in HD Cloud's cache?
-        :param name: A name for the name.
         :param remote_id: An arbitrary string identifying the job.
         :param callback_url: A webhook that will get POSTed to when the job completes.
-        :rtype: the :class:`Job` that's been created.
+        :rtype: a list of :class:`Job` instances that have been kicked off.
         """
         params = [
             ('job[source_id]',      int(getattr(source, 'id', source))),
@@ -86,18 +90,19 @@ class JobManager(base.Manager):
             ('job[priority]',       int(priority)),
             ('job[use_file_cache]', use_file_cache and 'true' or 'false'),
         ]
+
         params.extend([('files[]', f) for f in files])
-        if profiles:
-            prof_ids = [int(getattr(p, 'id', p)) for p in profiles]
-            params.extend([('encoding_profile_ids[]', p) for p in prof_ids])
-        if name:
-            params.append(('job[name]', name))
+
+        prof_ids = [int(getattr(p, 'id', p)) for p in profiles]
+        params.extend([('encoding_profile_ids[]', p) for p in prof_ids])
+
         if remote_id:
             params.append(('job[remote_id]', remote_id))
         if callback_url:
             params.append(('job[callback_url]', callback_url))
-
-        return self._create('/jobs', urllib.urlencode(params), 'job')
+        
+        resp, body = self.api.client.post('/jobs', body=urllib.urlencode(params))
+        return [self.resource_class(self, j['job']) for j in body]
         
     def get(self, id):
         """

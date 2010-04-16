@@ -173,13 +173,21 @@ class FakeClient(HDCloudClient):
                                "remote_id": "my-own-remote-id"}}])
     
     def post_jobs(self, body, **kw):
-        assert_has_keys(body, 
-                        required = ['job[source_id]', 'job[destination_id]',
-                                    'files[]', 'encoding_profile_ids[]'],
-                        optional = ['job[priority]', 'job[use_file_cache]',
-                                    'job[name]', 'job[callback_url]',
-                                    'job[remote_id]'])
-        return (200, self.get_jobs())
+        post_params = urlparse.parse_qsl(body)
+        post_keys = [k for k,v in post_params]
+        
+        # Check required POST keys
+        required_keys = ['job[source_id]', 'job[destination_id]', 'files[]', 'encoding_profile_ids[]']
+        for k in required_keys:
+            assert_in(k, post_keys)
+        
+        # Check for invalid POST keys
+        optional_keys = ['job[priority]', 'job[use_file_cache]', 'job[callback_url]', 'job[remote_id]']
+        all_keys = required_keys + optional_keys
+        for k in post_keys:
+            assert_in(k, all_keys)
+
+        return (200, self.get_jobs()[1])
     
     def get_stores(self, **kw):
         return (200, {"stores": [{"id": 1,
