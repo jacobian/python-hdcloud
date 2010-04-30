@@ -22,7 +22,7 @@ setup(
     author_email = 'jacob@jacobian.org',
     packages = find_packages(exclude=['tests']),
     classifiers = [
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
